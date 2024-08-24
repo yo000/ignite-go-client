@@ -778,15 +778,6 @@ func (c *client) cacheCreateWithConfiguration(code int16, cc *CacheConfiguration
 		}
 		req.Count++
 	}
-	if cc.WriteSynchronizationMode != nil {
-		if err := WriteShort(req, cacheConfigurationWriteSynchronizationModeCode); err != nil {
-			return errors.Wrapf(err, "failed to write WriteSynchronizationMode property code")
-		}
-		if err := WriteInt(req, *cc.WriteSynchronizationMode); err != nil {
-			return errors.Wrapf(err, "failed to write WriteSynchronizationMode property value")
-		}
-		req.Count++
-	}
 	if cc.CacheKeyConfigurations != nil && len(cc.CacheKeyConfigurations) > 0 {
 		if err := WriteShort(req, cacheConfigurationCacheKeyConfigurationsCode); err != nil {
 			return errors.Wrapf(err, "failed to write CacheKeyConfigurations code")
