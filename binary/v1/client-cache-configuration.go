@@ -455,6 +455,7 @@ func (c *client) CacheGetConfiguration(cache string, flag byte) (*CacheConfigura
 			if qf.DefaultValue, err = ReadObject(res); err != nil {
 				return nil, errors.Wrapf(err, "failed to read QueryField.DefaultValue")
 			}
+			qe.QueryFields = append(qe.QueryFields, qf)
 		}
 
 		// read FieldNameAliases
