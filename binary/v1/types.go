@@ -588,6 +588,9 @@ func WriteObject(w io.Writer, o interface{}) error {
 	case int:
 		// int converts to int64
 		return WriteOLong(w, int64(v))
+	// Thanks to https://github.com/cuongtructran/ignite-go-client/commit/40dce0bfe58736b10bb525aaa4ab7f1939be8ad7
+	case uint:
+		return WriteOLong(w, int64(v))
 	case float32:
 		return WriteOFloat(w, v)
 	case float64:
