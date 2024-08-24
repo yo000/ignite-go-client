@@ -140,11 +140,13 @@ type QueryEntity struct {
 }
 
 // QueryField is struct
+// DefaultValue HAVE TO be defined, to byte(typeNULL) at least.
 type QueryField struct {
 	Name                     string
 	TypeName                 string
 	IsKeyField               bool
 	IsNotNullConstraintField bool
+	DefaultValue             interface{}
 }
 
 // QueryIndex is struct
@@ -449,6 +451,9 @@ func (c *client) CacheGetConfiguration(cache string, flag byte) (*CacheConfigura
 			}
 			if qf.IsNotNullConstraintField, err = ReadBool(res); err != nil {
 				return nil, errors.Wrapf(err, "failed to read QueryField.IsNotNullConstraintField")
+			}
+			if qf.DefaultValue, err = ReadObject(res); err != nil {
+				return nil, errors.Wrapf(err, "failed to read QueryField.DefaultValue")
 			}
 		}
 
@@ -839,6 +844,44 @@ func (c *client) cacheCreateWithConfiguration(code int16, cc *CacheConfiguration
 					}
 					if err := WriteBool(req, v2.IsNotNullConstraintField); err != nil {
 						return errors.Wrapf(err, "failed to write QueryField.IsNotNullConstraintField with index %d", j)
+					}
+					switch v2.DefaultValue.(type) {
+					case byte:
+						if err := WriteByte(req, v2.DefaultValue.(byte)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as byte with index %d", j)
+						}
+					case int16:
+						if err := WriteOShort(req, v2.DefaultValue.(int16)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as short with index %d", j)
+						}
+					case int32:
+						if err := WriteOInt(req, v2.DefaultValue.(int32)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as int with index %d", j)
+						}
+					case int, int64:
+						if err := WriteOLong(req, v2.DefaultValue.(int64)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as long with index %d", j)
+						}
+					case float32:
+						if err := WriteOFloat(req, v2.DefaultValue.(float32)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as float with index %d", j)
+						}
+					case float64:
+						if err := WriteODouble(req, v2.DefaultValue.(float64)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as double with index %d", j)
+						}
+					case Char:
+						if err := WriteOChar(req, v2.DefaultValue.(Char)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as char with index %d", j)
+						}
+					case bool:
+						if err := WriteBool(req, v2.DefaultValue.(bool)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as bool with index %d", j)
+						}
+					case string:
+						if err := WriteOString(req, v2.DefaultValue.(string)); err != nil {
+							return errors.Wrapf(err, "failed to write QueryField.DefaultValue as string with index %d", j)
+						}
 					}
 				}
 			}
