@@ -818,11 +818,23 @@ func (c *client) cacheCreateWithConfiguration(code int16, cc *CacheConfiguration
 			if err := WriteOString(req, v.TableName); err != nil {
 				return errors.Wrapf(err, "failed to write QueryEntity.TableName with index %d", i)
 			}
-			if err := WriteOString(req, v.KeyFieldName); err != nil {
-				return errors.Wrapf(err, "failed to write QueryEntity.KeyFieldName with index %d", i)
+			if len(v.KeyFieldName) == 0 {
+				if err := WriteNull(req); err != nil {
+					return errors.Wrapf(err, "failed to write Null value for QueryEntity.KeyFieldName with index %d", i)
+				}
+			} else {
+				if err := WriteOString(req, v.KeyFieldName); err != nil {
+					return errors.Wrapf(err, "failed to write QueryEntity.KeyFieldName with index %d", i)
+				}
 			}
-			if err := WriteOString(req, v.ValueFieldName); err != nil {
-				return errors.Wrapf(err, "failed to write QueryEntity.ValueFieldName with index %d", i)
+			if len(v.ValueFieldName) == 0 {
+				if err := WriteNull(req); err != nil {
+					return errors.Wrapf(err, "failed to write Null value for QueryEntity.ValueFieldName with index %d", i)
+				}
+			} else {
+				if err := WriteOString(req, v.ValueFieldName); err != nil {
+					return errors.Wrapf(err, "failed to write QueryEntity.ValueFieldName with index %d", i)
+				}
 			}
 			var l int32
 			if v.QueryFields != nil {
