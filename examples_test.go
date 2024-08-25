@@ -290,3 +290,129 @@ func Test_SQL_Queries(t *testing.T) {
 	}
 	log.Printf("res=%#v", r2.Rows)
 }
+
+func Test_SQL_Queries_PUBLIC_Schema(t *testing.T) {
+	// connect
+	c, err := ignite.Connect(ignite.ConnInfo{
+		Network: "tcp",
+		Host:    "localhost",
+		Port:    10800,
+		Major:   1,
+		Minor:   1,
+		Patch:   0,
+		// Credentials are only needed if they're configured in your Ignite server.
+		Username: "ignite",
+		Password: "ignite",
+		Dialer: net.Dialer{
+			Timeout: 10 * time.Second,
+		},
+		// Don't set the TLSConfig if your Ignite server
+		// isn't configured with any TLS certificates.
+		TLSConfig: &tls.Config{
+			// You should only set this to true for testing purposes.
+			InsecureSkipVerify: true,
+		},
+	})
+	if err != nil {
+		t.Fatalf("failed connect to server: %v", err)
+	}
+	defer c.Close()
+
+	createOrgQuery := "CREATE TABLE Organization ( orgId BIGINT PRIMARY KEY, name VARCHAR, foundDateTime TIMESTAMP)"
+	createPersonQuery := "CREATE TABLE Person (personId BIGINT PRIMARY KEY, orgId BIGINT, firstName VARCHAR, lastName VARCHAR, resume VARCHAR, salary DOUBLE)"
+
+	_, err = c.QuerySQLFields("", false, ignite.QuerySQLFieldsData{
+		Schema: "PUBLIC",
+		Query:    createOrgQuery,
+		PageSize: 1,
+	})
+	if err != nil {
+		t.Fatalf("failed create table Organization : %v", err)
+	}
+
+	_, err = c.QuerySQLFields("", false, ignite.QuerySQLFieldsData{
+		Schema: "PUBLIC",
+		Query:    createPersonQuery,
+		PageSize: 1,
+	})
+	if err != nil {
+		t.Fatalf("failed create table Person : %v", err)
+	}
+
+	// insert data
+	tm := time.Date(2018, 4, 3, 14, 25, 32, int(time.Millisecond*123+time.Microsecond*456+789), time.UTC)
+	// Do not specify cache when using schema and creating table programatically
+	_, err = c.QuerySQLFields("", false, ignite.QuerySQLFieldsData{
+		PageSize: 10,
+		Schema: "PUBLIC",
+		Query: "INSERT INTO Organization(_key, name, foundDateTime) VALUES" +
+		"(?, ?, ?)," +
+		"(?, ?, ?)," +
+		"(?, ?, ?)",
+		QueryArgs: []interface{}{
+		int64(1), "Org 1", tm,
+		int64(2), "Org 2", tm,
+		int64(3), "Org 3", tm},
+	})
+	if err != nil {
+		t.Fatalf("failed insert data: %v", err)
+	}
+
+	// select data using QuerySQL
+	r, err := c.QuerySQLFields("", false, ignite.QuerySQLFieldsData{
+		Schema: "PUBLIC",
+		Query:    "SELECT * FROM Organization ORDER BY name ASC",
+		PageSize: 10000,
+	})
+	if err != nil {
+		t.Fatalf("failed query data: %v", err)
+	}
+
+	for _, r := range r.Rows {
+		log.Printf("key=%d, name=\"%s\", found=%#v", r[0], r[1], r[2])
+	}
+
+	// insert more data
+	_, err = c.QuerySQLFields("", false, ignite.QuerySQLFieldsData{
+		PageSize: 10,
+		Schema: "PUBLIC",
+		Query: "INSERT INTO Person(_key, orgId, firstName, lastName, resume, salary) VALUES" +
+		"(?, ?, ?, ?, ?, ?)," +
+		"(?, ?, ?, ?, ?, ?)," +
+		"(?, ?, ?, ?, ?, ?)," +
+		"(?, ?, ?, ?, ?, ?)," +
+		"(?, ?, ?, ?, ?, ?)",
+		QueryArgs: []interface{}{
+			int64(4), int64(1), "First name 1", "Last name 1", "Resume 1", float64(100.0),
+			int64(5), int64(1), "First name 2", "Last name 2", "Resume 2", float64(200.0),
+			int64(6), int64(2), "First name 3", "Last name 3", "Resume 3", float64(300.0),
+			int64(7), int64(2), "First name 4", "Last name 4", "Resume 4", float64(400.0),
+			int64(8), int64(3), "First name 5", "Last name 5", "Resume 5", float64(500.0)},
+	})
+	if err != nil {
+		t.Fatalf("failed insert data: %v", err)
+	}
+
+	// select data using QuerySQLFields
+	r2, err := c.QuerySQLFields("", false, ignite.QuerySQLFieldsData{
+		PageSize: 10,
+		Schema: "PUBLIC",
+		Query: "SELECT " +
+		"o.name AS Name, " +
+		"o.foundDateTime AS Found, " +
+		"p.firstName AS FirstName, " +
+		"p.lastName AS LastName, " +
+		"p.salary AS Salary " +
+		"FROM Person p INNER JOIN Organization o ON p.orgId = o._key " +
+		"WHERE o._key = ? " +
+		"ORDER BY p.firstName",
+		QueryArgs: []interface{}{
+			int64(2)},
+			Timeout:           10000,
+			IncludeFieldNames: true,
+	})
+	if err != nil {
+		t.Fatalf("failed query data: %v", err)
+	}
+	log.Printf("res=%#v", r2.Rows)
+}
