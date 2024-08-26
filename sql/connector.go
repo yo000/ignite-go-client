@@ -6,9 +6,9 @@ import (
 	"context"
 	"database/sql/driver"
 
-	"github.com/amsokol/ignite-go-client/binary/errors"
-	"github.com/amsokol/ignite-go-client/sql/common"
-	"github.com/amsokol/ignite-go-client/sql/v1"
+	"github.com/yo000/ignite-go-client/binary/errors"
+	"github.com/yo000/ignite-go-client/sql/common"
+	"github.com/yo000/ignite-go-client/sql/v1"
 )
 
 type connector struct {

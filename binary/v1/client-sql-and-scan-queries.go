@@ -1,7 +1,7 @@
 package ignite
 
 import (
-	"github.com/amsokol/ignite-go-client/binary/errors"
+	"github.com/yo000/ignite-go-client/binary/errors"
 )
 
 const (

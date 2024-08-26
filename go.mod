@@ -1,4 +1,4 @@
-module github.com/amsokol/ignite-go-client
+module github.com/yo000/ignite-go-client
 
 require (
 	github.com/Masterminds/semver v1.4.2

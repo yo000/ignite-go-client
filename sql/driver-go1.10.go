@@ -5,7 +5,7 @@ package ignitesql
 import (
 	"database/sql/driver"
 
-	"github.com/amsokol/ignite-go-client/binary/errors"
+	"github.com/yo000/ignite-go-client/binary/errors"
 )
 
 // OpenConnector must parse the name in the same format that Driver.

@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/amsokol/ignite-go-client/binary/errors"
+	"github.com/yo000/ignite-go-client/binary/errors"
 )
 
 // RequestHandshake is struct handshake request

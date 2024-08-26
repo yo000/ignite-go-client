@@ -5,7 +5,7 @@ import (
 	"io"
 	"math/rand"
 
-	"github.com/amsokol/ignite-go-client/binary/errors"
+	"github.com/yo000/ignite-go-client/binary/errors"
 )
 
 // RequestOperation is struct to store operation request

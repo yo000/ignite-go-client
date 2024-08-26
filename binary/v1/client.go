@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/amsokol/ignite-go-client/binary/errors"
-	"github.com/amsokol/ignite-go-client/debug"
+	"github.com/yo000/ignite-go-client/binary/errors"
+	"github.com/yo000/ignite-go-client/debug"
 )
 
 // ConnInfo contains connections parameters

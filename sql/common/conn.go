@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/amsokol/ignite-go-client/binary/v1"
+	"github.com/yo000/ignite-go-client/binary/v1"
 )
 
 // ConnInfo contains Apache Ignite cluster connection and query execution parameters
