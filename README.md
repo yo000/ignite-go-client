@@ -1,17 +1,23 @@
 # ignite-go-client
 
-[![GoDoc](https://www.godoc.org/github.com/amsokol/ignite-go-client?status.svg)](https://www.godoc.org/github.com/amsokol/ignite-go-client)
-[![GitHub release](https://img.shields.io/github/release/amsokol/ignite-go-client.svg)](https://github.com/amsokol/ignite-go-client/releases)
-[![GitHub issues](https://img.shields.io/github/issues/amsokol/ignite-go-client.svg)](https://github.com/amsokol/ignite-go-client/issues)
-[![GitHub issues closed](https://img.shields.io/github/issues-closed/amsokol/ignite-go-client.svg)](https://github.com/amsokol/ignite-go-client/issues)
+## yo000 disclaimer
+This project was initially created by https://github.com/amsokol/, many thanks to him for the great work.
+The original URL is https://github.com/amsokol/ignite-go-client, and I shamelessly modified all URLs so I can use this fork in my own developments. Use it at your own risk.
+
+
+
+[![GoDoc](https://www.godoc.org/github.com/yo000/ignite-go-client?status.svg)](https://www.godoc.org/github.com/yo000/ignite-go-client)
+[![GitHub release](https://img.shields.io/github/release/amsokol/ignite-go-client.svg)](https://github.com/yo000/ignite-go-client/releases)
+[![GitHub issues](https://img.shields.io/github/issues/amsokol/ignite-go-client.svg)](https://github.com/yo000/ignite-go-client/issues)
+[![GitHub issues closed](https://img.shields.io/github/issues-closed/amsokol/ignite-go-client.svg)](https://github.com/yo000/ignite-go-client/issues)
 [![Go Report Card](https://goreportcard.com/badge/amsokol/ignite-go-client)](http://goreportcard.com/report/amsokol/ignite-go-client)
-[![license](https://img.shields.io/github/license/amsokol/ignite-go-client.svg)](https://github.com/amsokol/ignite-go-client/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/amsokol/ignite-go-client.svg)](https://github.com/yo000/ignite-go-client/blob/master/LICENSE)
 
 ## Apache Ignite (GridGain) v2.5+ client for Go programming language
 
-This library is production ready.
-
 Version is less than v1.0 because not all functionality is implemented yet (see [Road map](#road-map) for details). But the implemented functionality is production ready.
+Client is tested with 2.16 Ignite instance, all tests run successfully.
+I do not use all functionnalities though, comments or issues are welcome.
 
 ### Requirements
 
@@ -33,7 +39,7 @@ Project status:
 ### How to install
 
 ```shell
-go get -u github.com/amsokol/ignite-go-client/...
+go get -u github.com/yo000/ignite-go-client/...
 ```
 
 ### How to use client
@@ -42,7 +48,7 @@ Import client package:
 
 ```go
 import (
-    "github.com/amsokol/ignite-go-client/binary/v1"
+    "github.com/yo000/ignite-go-client/binary/v1"
 )
 ```
 
@@ -79,11 +85,11 @@ defer c.Close()
 
 ```
 
-See [example of Key-Value Queries](https://github.com/amsokol/ignite-go-client/blob/master/examples_test.go#L106) for more.
+See [example of Key-Value Queries](https://github.com/yo000/ignite-go-client/blob/master/examples_test.go#L106) for more.
 
-See [example of SQL Queries](https://github.com/amsokol/ignite-go-client/blob/master/examples_test.go#L181) for more.
+See [example of SQL Queries](https://github.com/yo000/ignite-go-client/blob/master/examples_test.go#L181) for more.
 
-See ["_test.go" files](https://github.com/amsokol/ignite-go-client/tree/master/binary/v1) for other examples.
+See ["_test.go" files](https://github.com/yo000/ignite-go-client/tree/master/binary/v1) for other examples.
 
 ### How to use SQL driver
 
@@ -93,7 +99,7 @@ Import SQL driver:
 import (
     "database/sql"
 
-    _ "github.com/amsokol/ignite-go-client/sql"
+    _ "github.com/yo000/ignite-go-client/sql"
 )
 ```
 
@@ -112,7 +118,7 @@ defer db.Close()
 
 ```
 
-See [example](https://github.com/amsokol/ignite-go-client/blob/master/examples_test.go#L16) for more.
+See [example](https://github.com/yo000/ignite-go-client/blob/master/examples_test.go#L16) for more.
 
 Connection URL format:
 
