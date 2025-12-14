@@ -17,12 +17,22 @@ type Rows interface {
 	driver.Rows
 }
 
+// name is available once rows have been instantiated,
+// but cType is not available until we read rows with
+// rows.Next(). And once all rows are read, rows are closed
+// so we cannot call ColumnTypes() anymore. So the ony window
+// to get cType is inside the loop using rows.Next().
+type columnType struct {
+	name    string
+	cType   *ignite.IgniteType
+}
+
 type rows struct {
-	conn     *conn
-	response *ignite.ResponseOperation
-	id       int64
-	fields   []string
-	rowsLeft int
+	conn        *conn
+	response    *ignite.ResponseOperation
+	id          int64
+	fields      []columnType
+	rowsLeft    int
 }
 
 // Columns returns the names of the columns. The number of
@@ -30,7 +40,18 @@ type rows struct {
 // slice. If a particular column name isn't known, an empty
 // string should be returned for that entry.
 func (r *rows) Columns() []string {
-	return r.fields
+	columns := make([]string, len(r.fields))
+	for i, f := range r.fields {
+		columns[i] = f.name
+	}
+	return columns
+}
+
+func (r *rows) ColumnTypeDatabaseTypeName(i int) string {
+	if *r.fields[i].cType == 0 {
+		return "not available yet"
+	}
+	return r.fields[i].cType.SqlType()
 }
 
 // Close closes the rows iterator.
@@ -82,6 +103,15 @@ func (r *rows) Next(dest []driver.Value) error {
 		return errors.Errorf("destination slice size must be %d but got %d", len(r.fields), len(dest))
 	}
 	for i := 0; i < len(r.fields); i++ {
+		if *r.fields[i].cType == 0 {
+			// Get column type
+			v, err := r.response.Peek(1)
+			if err != nil {
+				return fmt.Errorf("failed to peek field type with index %d: %v", i, err)
+			}
+			*r.fields[i].cType = ignite.IgniteType(v[0])
+		}
+
 		if dest[i], err = ignite.ReadObject(r.response); err != nil {
 			return fmt.Errorf("failed to read field value with index %d: %v", i, err)
 		}
@@ -103,13 +133,15 @@ func newRows(conn *conn, r *ignite.ResponseOperation) (driver.Rows, error) {
 		return nil, errors.Wrapf(err, "failed to read field count")
 	}
 	// response MUST return field names
-	fields := make([]string, 0, fieldCount)
+	fields := make([]columnType, 0, fieldCount)
 	for i := 0; i < int(fieldCount); i++ {
 		var s string
 		if s, err = ignite.ReadOString(r); err != nil {
 			return nil, errors.Wrapf(err, "failed to read field name with index %d", i)
 		}
-		fields = append(fields, s)
+		// At this moment we does not have column type, it will be completed when calling rows.Next()
+		t := ignite.IgniteType(0)
+		fields = append(fields, columnType{name: s, cType: &t})
 	}
 
 	// read row count
