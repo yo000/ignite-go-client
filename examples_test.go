@@ -99,12 +99,20 @@ func Test_SQL_Driver(t *testing.T) {
 		name string
 		tm   time.Time
 	)
+	// ColumnTypes() is only accessible inside rows.Next(), as types are built in values stream.
+	// After rows.Next() finished, rows is closed so rows.ColumnTypes() does not return anything.
+	colTypes := make(map[string]string)
 	for rows.Next() {
+		ct, _ := rows.ColumnTypes()
+		for _, c := range ct {
+			colTypes[c.Name()] = c.DatabaseTypeName()
+		}
 		if err := rows.Scan(&key, &name, &tm); err != nil {
 			t.Fatalf("failed to get row: %v", err)
 		}
 		log.Printf("key=%d, name=\"%s\", found=\"%v\"", key, name, tm)
 	}
+	log.Printf("columns types : %v\n", colTypes)
 }
 
 func Test_Key_Value(t *testing.T) {
