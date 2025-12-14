@@ -1,6 +1,7 @@
 package ignite
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/binary"
 	"io"
@@ -12,44 +13,46 @@ import (
 	"github.com/yo000/ignite-go-client/binary/errors"
 )
 
+type IgniteType int
+
 const (
 	// Supported standard types and their type codes are as follows:
-	typeByte        = 1
-	typeShort       = 2
-	typeInt         = 3
-	typeLong        = 4
-	typeFloat       = 5
-	typeDouble      = 6
-	typeChar        = 7
-	typeBool        = 8
-	typeString      = 9
-	typeUUID        = 10
-	typeDate        = 11
-	typeByteArray   = 12
-	typeShortArray  = 13
-	typeIntArray    = 14
-	typeLongArray   = 15
-	typeFloatArray  = 16
-	typeDoubleArray = 17
-	typeCharArray   = 18
-	typeBoolArray   = 19
-	typeStringArray = 20
-	typeUUIDArray   = 21
-	typeDateArray   = 22
+	typeByte IgniteType        = 1
+	typeShort IgniteType       = 2
+	typeInt IgniteType         = 3
+	typeLong IgniteType        = 4
+	typeFloat IgniteType       = 5
+	typeDouble IgniteType      = 6
+	typeChar IgniteType        = 7
+	typeBool IgniteType        = 8
+	typeString IgniteType      = 9
+	typeUUID IgniteType        = 10
+	typeDate IgniteType        = 11
+	typeByteArray IgniteType   = 12
+	typeShortArray IgniteType  = 13
+	typeIntArray IgniteType    = 14
+	typeLongArray IgniteType   = 15
+	typeFloatArray IgniteType  = 16
+	typeDoubleArray IgniteType = 17
+	typeCharArray IgniteType   = 18
+	typeBoolArray IgniteType   = 19
+	typeStringArray IgniteType = 20
+	typeUUIDArray IgniteType   = 21
+	typeDateArray IgniteType   = 22
 	// TODO: Object array = 23
 	// TODO: Collection = 24
 	// TODO: Map = 25
-	typeBinaryObjectArray = 27
+	typeBinaryObjectArray IgniteType = 27
 	// TODO: Enum = 28
 	// TODO: Enum Array = 29
 	// TODO: Decimal = 30
 	// TODO: Decimal Array = 31
-	typeTimestamp      = 33
-	typeTimestampArray = 34
-	typeTime           = 36
-	typeTimeArray      = 37
-	typeNULL           = 101
-	typeComplexObject  = 103
+	typeTimestamp IgniteType      = 33
+	typeTimestampArray IgniteType = 34
+	typeTime IgniteType           = 36
+	typeTimeArray IgniteType      = 37
+	typeNULL IgniteType           = 101
+	typeComplexObject IgniteType  = 103
 )
 
 const (
@@ -84,6 +87,154 @@ type Date int64
 type ComplexObject struct {
 	Type   int32
 	Fields map[int32]interface{}
+}
+
+func (t IgniteType) Byte() byte {
+	return byte(t)
+}
+
+func (t IgniteType) String() string {
+	switch t {
+		case typeByte:
+			return "byte"
+		case typeShort:
+			return "short"
+		case typeInt:
+			return "int"
+		case typeLong:
+			return "long"
+		case typeFloat:
+			return "float"
+		case typeDouble:
+			return "double"
+		case typeChar:
+			return "char"
+		case typeBool:
+			return "boolean"
+		case typeString:
+			return "string"
+		case typeUUID:
+			return "UUID"
+		case typeDate:
+			return "date"
+		case typeByteArray:
+			return "byte array"
+		case typeShortArray:
+			return "short array"
+		case typeIntArray:
+			return "int array"
+		case typeLongArray:
+			return "long array"
+		case typeFloatArray:
+			return "float array"
+		case typeDoubleArray:
+			return "double array"
+		case typeCharArray:
+			return "char array"
+		case typeBoolArray:
+			return "boolean array"
+		case typeStringArray:
+			return "string array"
+		case typeUUIDArray:
+			return "UUID array"
+		case typeDateArray:
+			return "date array"
+		case typeBinaryObjectArray:
+			return "binary object array"
+		case typeTimestamp:
+			return "timestamp"
+		case typeTimestampArray:
+			return "timestamp array"
+		case typeTime:
+			return "time"
+		case typeTimeArray:
+			return "time array"
+		case typeNULL:
+			return "null"
+		case typeComplexObject:
+			return "complex object"
+		default:
+			return ""
+	}
+}
+
+func (t IgniteType) SqlType() string {
+	switch t {
+		case typeByte:
+			return "TINYINT"
+		case typeShort:
+			return "SMALLINT"
+		case typeInt:
+			return "INT"
+		case typeLong:
+			return "BIGINT"
+		case typeFloat:
+			return "REAL"
+		case typeDouble:
+			return "DOUBLE"
+		case typeChar:
+			return "CHAR"
+		case typeBool:
+			return "BOOLEAN"
+		case typeString:
+			return "VARCHAR"
+		case typeUUID:
+			return "UUID"
+		case typeDate:
+			return "DATE"
+		case typeByteArray:
+			return "BINARY"
+		case typeShortArray:
+			// ?
+			return ""
+		case typeIntArray:
+			// ?
+			return ""
+		case typeLongArray:
+			// ?
+			return ""
+		case typeFloatArray:
+			// ?
+			return ""
+		case typeDoubleArray:
+			// ?
+			return ""
+		case typeCharArray:
+			// ?
+			return "VARCHAR"
+		case typeBoolArray:
+			// ?
+			return ""
+		case typeStringArray:
+			// ?
+			return ""
+		case typeUUIDArray:
+			// ?
+			return ""
+		case typeDateArray:
+			// ?
+			return ""
+		case typeBinaryObjectArray:
+			// ?
+			return ""
+		case typeTimestamp:
+			return "TIMESTAMP"
+		case typeTimestampArray:
+			// ?
+			return ""
+		case typeTime:
+			return "TIME"
+		case typeTimeArray:
+			// ?
+			return ""
+		case typeNULL:
+			return "NULL"
+		case typeComplexObject:
+			// ?
+			return ""
+		default:
+			return ""
+	}
 }
 
 // Set sets field value
@@ -146,7 +297,7 @@ func WriteByte(w io.Writer, v byte) error {
 
 // WriteOByte writes "byte" object value
 func WriteOByte(w io.Writer, v byte) error {
-	if err := WriteType(w, typeByte); err != nil {
+	if err := WriteType(w, typeByte.Byte()); err != nil {
 		return err
 	}
 	return WriteByte(w, v)
@@ -159,7 +310,7 @@ func WriteShort(w io.Writer, v int16) error {
 
 // WriteOShort writes "short" object value
 func WriteOShort(w io.Writer, v int16) error {
-	if err := WriteType(w, typeShort); err != nil {
+	if err := WriteType(w, typeShort.Byte()); err != nil {
 		return err
 	}
 	return WriteShort(w, v)
@@ -172,7 +323,7 @@ func WriteInt(w io.Writer, v int32) error {
 
 // WriteOInt writes "int" object value
 func WriteOInt(w io.Writer, v int32) error {
-	if err := WriteType(w, typeInt); err != nil {
+	if err := WriteType(w, typeInt.Byte()); err != nil {
 		return err
 	}
 	return WriteInt(w, v)
@@ -185,7 +336,7 @@ func WriteLong(w io.Writer, v int64) error {
 
 // WriteOLong writes "long" object value
 func WriteOLong(w io.Writer, v int64) error {
-	if err := WriteType(w, typeLong); err != nil {
+	if err := WriteType(w, typeLong.Byte()); err != nil {
 		return err
 	}
 	return WriteLong(w, v)
@@ -198,7 +349,7 @@ func WriteFloat(w io.Writer, v float32) error {
 
 // WriteOFloat writes "float" object value
 func WriteOFloat(w io.Writer, v float32) error {
-	if err := WriteType(w, typeFloat); err != nil {
+	if err := WriteType(w, typeFloat.Byte()); err != nil {
 		return err
 	}
 	return WriteFloat(w, v)
@@ -211,7 +362,7 @@ func WriteDouble(w io.Writer, v float64) error {
 
 // WriteODouble writes "double" object value
 func WriteODouble(w io.Writer, v float64) error {
-	if err := WriteType(w, typeDouble); err != nil {
+	if err := WriteType(w, typeDouble.Byte()); err != nil {
 		return err
 	}
 	return WriteDouble(w, v)
@@ -224,7 +375,7 @@ func WriteChar(w io.Writer, v Char) error {
 
 // WriteOChar writes "char" object value
 func WriteOChar(w io.Writer, v Char) error {
-	if err := WriteType(w, typeChar); err != nil {
+	if err := WriteType(w, typeChar.Byte()); err != nil {
 		return err
 	}
 	return WriteChar(w, v)
@@ -237,7 +388,7 @@ func WriteBool(w io.Writer, v bool) error {
 
 // WriteOBool writes "bool" object value
 func WriteOBool(w io.Writer, v bool) error {
-	if err := WriteType(w, typeBool); err != nil {
+	if err := WriteType(w, typeBool.Byte()); err != nil {
 		return err
 	}
 	return WriteBool(w, v)
@@ -246,7 +397,7 @@ func WriteOBool(w io.Writer, v bool) error {
 // WriteOString writes "string" object value
 // String is marshalling as object in all cases.
 func WriteOString(w io.Writer, v string) error {
-	if err := WriteType(w, typeString); err != nil {
+	if err := WriteType(w, typeString.Byte()); err != nil {
 		return err
 	}
 	s := []byte(v)
@@ -259,7 +410,7 @@ func WriteOString(w io.Writer, v string) error {
 // WriteOUUID writes "UUID" object value
 // UUID is marshaled as object in all cases.
 func WriteOUUID(w io.Writer, v uuid.UUID) error {
-	if err := WriteType(w, typeUUID); err != nil {
+	if err := WriteType(w, typeUUID.Byte()); err != nil {
 		return err
 	}
 	uuidFlip(&v)
@@ -268,7 +419,7 @@ func WriteOUUID(w io.Writer, v uuid.UUID) error {
 
 // WriteODate writes "Date" object value
 func WriteODate(w io.Writer, v Date) error {
-	if err := WriteType(w, typeDate); err != nil {
+	if err := WriteType(w, typeDate.Byte()); err != nil {
 		return err
 	}
 	return WriteLong(w, int64(v))
@@ -281,7 +432,7 @@ func WriteBytes(w io.Writer, v []byte) error {
 
 // WriteOArrayBytes writes "byte" array object value
 func WriteOArrayBytes(w io.Writer, v []byte) error {
-	if err := WriteType(w, typeByteArray); err != nil {
+	if err := WriteType(w, typeByteArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -292,7 +443,7 @@ func WriteOArrayBytes(w io.Writer, v []byte) error {
 
 // WriteOArrayShorts writes "short" array object value
 func WriteOArrayShorts(w io.Writer, v []int16) error {
-	if err := WriteType(w, typeShortArray); err != nil {
+	if err := WriteType(w, typeShortArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -303,7 +454,7 @@ func WriteOArrayShorts(w io.Writer, v []int16) error {
 
 // WriteOArrayInts writes "int" array object value
 func WriteOArrayInts(w io.Writer, v []int32) error {
-	if err := WriteType(w, typeIntArray); err != nil {
+	if err := WriteType(w, typeIntArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -314,7 +465,7 @@ func WriteOArrayInts(w io.Writer, v []int32) error {
 
 // WriteOArrayLongs writes "long" array object value
 func WriteOArrayLongs(w io.Writer, v []int64) error {
-	if err := WriteType(w, typeLongArray); err != nil {
+	if err := WriteType(w, typeLongArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -334,7 +485,7 @@ func WriteOArrayGoInts(w io.Writer, v []int) error {
 
 // WriteOArrayFloats writes "float" array object value
 func WriteOArrayFloats(w io.Writer, v []float32) error {
-	if err := WriteType(w, typeFloatArray); err != nil {
+	if err := WriteType(w, typeFloatArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -345,7 +496,7 @@ func WriteOArrayFloats(w io.Writer, v []float32) error {
 
 // WriteOArrayDoubles writes "double" array object value
 func WriteOArrayDoubles(w io.Writer, v []float64) error {
-	if err := WriteType(w, typeDoubleArray); err != nil {
+	if err := WriteType(w, typeDoubleArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -356,7 +507,7 @@ func WriteOArrayDoubles(w io.Writer, v []float64) error {
 
 // WriteOArrayChars writes "char" array object value
 func WriteOArrayChars(w io.Writer, v []Char) error {
-	if err := WriteType(w, typeCharArray); err != nil {
+	if err := WriteType(w, typeCharArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -372,7 +523,7 @@ func WriteOArrayChars(w io.Writer, v []Char) error {
 
 // WriteOArrayBools writes "Bool" array object value
 func WriteOArrayBools(w io.Writer, v []bool) error {
-	if err := WriteType(w, typeBoolArray); err != nil {
+	if err := WriteType(w, typeBoolArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -383,7 +534,7 @@ func WriteOArrayBools(w io.Writer, v []bool) error {
 
 // WriteOArrayOStrings writes "String" array object value
 func WriteOArrayOStrings(w io.Writer, v []string) error {
-	if err := WriteType(w, typeStringArray); err != nil {
+	if err := WriteType(w, typeStringArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -399,7 +550,7 @@ func WriteOArrayOStrings(w io.Writer, v []string) error {
 
 // WriteOArrayOUUIDs writes "UUID" array object value
 func WriteOArrayOUUIDs(w io.Writer, v []uuid.UUID) error {
-	if err := WriteType(w, typeUUIDArray); err != nil {
+	if err := WriteType(w, typeUUIDArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -415,7 +566,7 @@ func WriteOArrayOUUIDs(w io.Writer, v []uuid.UUID) error {
 
 // WriteOArrayODates writes "Date" array object value
 func WriteOArrayODates(w io.Writer, v []Date) error {
-	if err := WriteType(w, typeDateArray); err != nil {
+	if err := WriteType(w, typeDateArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -432,7 +583,7 @@ func WriteOArrayODates(w io.Writer, v []Date) error {
 // WriteOTimestamp writes "Timestamp" object value
 // Timestamp is marshaled as object in all cases.
 func WriteOTimestamp(w io.Writer, v time.Time) error {
-	if err := WriteType(w, typeTimestamp); err != nil {
+	if err := WriteType(w, typeTimestamp.Byte()); err != nil {
 		return err
 	}
 	high := int64(v.Unix() * 1000) // Unix time in milliseconds
@@ -447,7 +598,7 @@ func WriteOTimestamp(w io.Writer, v time.Time) error {
 
 // WriteOArrayOTimestamps writes "Timestamp" array object value
 func WriteOArrayOTimestamps(w io.Writer, v []time.Time) error {
-	if err := WriteType(w, typeTimestampArray); err != nil {
+	if err := WriteType(w, typeTimestampArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -464,7 +615,7 @@ func WriteOArrayOTimestamps(w io.Writer, v []time.Time) error {
 // WriteOTime writes "Time" object value
 // Time is marshaled as object in all cases.
 func WriteOTime(w io.Writer, v Time) error {
-	if err := WriteType(w, typeTime); err != nil {
+	if err := WriteType(w, typeTime.Byte()); err != nil {
 		return err
 	}
 	return WriteLong(w, int64(v))
@@ -472,7 +623,7 @@ func WriteOTime(w io.Writer, v Time) error {
 
 // WriteOArrayOTimes writes "Time" array object value
 func WriteOArrayOTimes(w io.Writer, v []Time) error {
-	if err := WriteType(w, typeTimeArray); err != nil {
+	if err := WriteType(w, typeTimeArray.Byte()); err != nil {
 		return err
 	}
 	if err := WriteInt(w, int32(len(v))); err != nil {
@@ -488,13 +639,13 @@ func WriteOArrayOTimes(w io.Writer, v []Time) error {
 
 // WriteNull writes NULL
 func WriteNull(w io.Writer) error {
-	return WriteByte(w, typeNULL)
+	return WriteByte(w, typeNULL.Byte())
 }
 
 // WriteOComplexObject writes complex object
 func WriteOComplexObject(w io.Writer, v ComplexObject) error {
 	// write type code
-	if err := WriteType(w, typeComplexObject); err != nil {
+	if err := WriteType(w, typeComplexObject.Byte()); err != nil {
 		return err
 	}
 	// write version
@@ -646,6 +797,13 @@ func WriteObject(w io.Writer, o interface{}) error {
 	}
 }
 
+// PeekByte reads "byte"  without advancing pointer
+func PeekByte(r bufio.Reader) (byte, error) {
+	var v []byte
+	v, err := r.Peek(1)
+	return v[0], err
+}
+
 // ReadByte reads "byte" value
 func ReadByte(r io.Reader) (byte, error) {
 	var v byte
@@ -734,9 +892,9 @@ func ReadOString(r io.Reader) (string, error) {
 		return "", err
 	}
 	switch t {
-	case typeNULL:
+	case typeNULL.Byte():
 		return "", nil
-	case typeString:
+	case typeString.Byte():
 		v, err := ReadString(r)
 		return v, err
 	default:
@@ -1121,63 +1279,63 @@ func ReadObject(r io.Reader) (interface{}, error) {
 	}
 
 	switch t {
-	case typeByte:
+	case typeByte.Byte():
 		return ReadByte(r)
-	case typeShort:
+	case typeShort.Byte():
 		return ReadShort(r)
-	case typeInt:
+	case typeInt.Byte():
 		return ReadInt(r)
-	case typeLong:
+	case typeLong.Byte():
 		return ReadLong(r)
-	case typeFloat:
+	case typeFloat.Byte():
 		return ReadFloat(r)
-	case typeDouble:
+	case typeDouble.Byte():
 		return ReadDouble(r)
-	case typeChar:
+	case typeChar.Byte():
 		return ReadChar(r)
-	case typeBool:
+	case typeBool.Byte():
 		return ReadBool(r)
-	case typeString:
+	case typeString.Byte():
 		return ReadString(r)
-	case typeUUID:
+	case typeUUID.Byte():
 		return ReadUUID(r)
-	case typeDate:
+	case typeDate.Byte():
 		return ReadDate(r)
-	case typeByteArray:
+	case typeByteArray.Byte():
 		return ReadArrayBytes(r)
-	case typeShortArray:
+	case typeShortArray.Byte():
 		return ReadArrayShorts(r)
-	case typeIntArray:
+	case typeIntArray.Byte():
 		return ReadArrayInts(r)
-	case typeLongArray:
+	case typeLongArray.Byte():
 		return ReadArrayLongs(r)
-	case typeFloatArray:
+	case typeFloatArray.Byte():
 		return ReadArrayFloats(r)
-	case typeDoubleArray:
+	case typeDoubleArray.Byte():
 		return ReadArrayDoubles(r)
-	case typeCharArray:
+	case typeCharArray.Byte():
 		return ReadArrayChars(r)
-	case typeBoolArray:
+	case typeBoolArray.Byte():
 		return ReadArrayBools(r)
-	case typeStringArray:
+	case typeStringArray.Byte():
 		return ReadArrayOStrings(r)
-	case typeDateArray:
+	case typeDateArray.Byte():
 		return ReadArrayODates(r)
-	case typeBinaryObjectArray:
+	case typeBinaryObjectArray.Byte():
 		return ReadArrayBinaryObject(r)
-	case typeUUIDArray:
+	case typeUUIDArray.Byte():
 		return ReadArrayOUUIDs(r)
-	case typeTimestamp:
+	case typeTimestamp.Byte():
 		return ReadTimestamp(r)
-	case typeTimestampArray:
+	case typeTimestampArray.Byte():
 		return ReadArrayOTimestamps(r)
-	case typeTime:
+	case typeTime.Byte():
 		return ReadTime(r)
-	case typeTimeArray:
+	case typeTimeArray.Byte():
 		return ReadArrayOTimes(r)
-	case typeNULL:
+	case typeNULL.Byte():
 		return nil, nil
-	case typeComplexObject:
+	case typeComplexObject.Byte():
 		return ReadComplexObject(r)
 	default:
 		return nil, errors.Errorf("unsupported object type: %d", t)

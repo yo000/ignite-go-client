@@ -1,7 +1,7 @@
 package ignite
 
 import (
-	"io"
+	"bufio"
 
 	"github.com/yo000/ignite-go-client/binary/errors"
 )
@@ -20,7 +20,7 @@ type ResponseHandshake struct {
 
 // ReadFrom is function to read request data from io.Reader.
 // Returns read bytes.
-func (r *ResponseHandshake) ReadFrom(rr io.Reader) (int64, error) {
+func (r *ResponseHandshake) ReadFrom(rr *bufio.Reader) (int64, error) {
 	// read response
 	n, err := r.response.ReadFrom(rr)
 	if err != nil {

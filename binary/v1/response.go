@@ -3,7 +3,7 @@ package ignite
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
+	"bufio"
 
 	"github.com/yo000/ignite-go-client/binary/errors"
 )
@@ -12,20 +12,20 @@ import (
 type Response interface {
 	// ReadFrom is function to read request data from io.Reader.
 	// Returns read bytes.
-	ReadFrom(r io.Reader) (int64, error)
+	ReadFrom(r *bufio.Reader) (int64, error)
 }
 
 // response is struct is implementing base message response functionality
 type response struct {
-	message io.Reader
+	message *bufio.Reader
 
 	Response
-	io.Reader
+	bufio.Reader
 }
 
 // ReadFrom is function to read request data from io.Reader.
 // Returns read bytes.
-func (r *response) ReadFrom(rr io.Reader) (int64, error) {
+func (r *response) ReadFrom(rr *bufio.Reader) (int64, error) {
 	// read response length
 	var l int32
 	if err := binary.Read(rr, binary.LittleEndian, &l); err != nil {
@@ -37,7 +37,7 @@ func (r *response) ReadFrom(rr io.Reader) (int64, error) {
 	if err := binary.Read(rr, binary.LittleEndian, &b); err != nil {
 		return 0, errors.Wrapf(err, "failed to read response data")
 	}
-	r.message = bytes.NewReader(b)
+	r.message = bufio.NewReader(bytes.NewReader(b))
 
 	return 4 + int64(l), nil
 }
@@ -49,4 +49,8 @@ func (r *response) ReadFrom(rr io.Reader) (int64, error) {
 // returns what is available instead of waiting for more.
 func (r *response) Read(p []byte) (n int, err error) {
 	return r.message.Read(p)
+}
+
+func (r *response) Peek(n int) (p []byte, err error) {
+	return r.message.Peek(n)
 }

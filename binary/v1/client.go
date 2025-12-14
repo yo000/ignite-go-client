@@ -1,6 +1,7 @@
 package ignite
 
 import (
+	"bufio"
 	"crypto/tls"
 	"fmt"
 	"net"
@@ -230,7 +231,7 @@ func (c *client) Do(req Request, res Response) error {
 	}
 
 	// receive response
-	_, err := res.ReadFrom(c.conn)
+	_, err := res.ReadFrom(bufio.NewReader(c.conn))
 
 	return err
 }

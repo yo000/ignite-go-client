@@ -2,7 +2,7 @@ package ignite
 
 import (
 	"bytes"
-	"io"
+	"bufio"
 	"testing"
 )
 
@@ -10,7 +10,7 @@ func Test_response_ReadFrom(t *testing.T) {
 	rr := bytes.NewBuffer([]byte{1, 0, 0, 0, 1})
 
 	type args struct {
-		rr io.Reader
+		rr *bufio.Reader
 	}
 	tests := []struct {
 		name    string
@@ -23,7 +23,7 @@ func Test_response_ReadFrom(t *testing.T) {
 			name: "1",
 			r:    &response{},
 			args: args{
-				rr: rr,
+				rr: bufio.NewReader(rr),
 			},
 			want: 4 + 1,
 		},

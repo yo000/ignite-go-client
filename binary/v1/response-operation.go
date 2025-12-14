@@ -1,7 +1,7 @@
 package ignite
 
 import (
-	"io"
+	"bufio"
 
 	"github.com/yo000/ignite-go-client/binary/errors"
 )
@@ -25,7 +25,7 @@ type ResponseOperation struct {
 
 // ReadFrom is function to read request data from io.Reader.
 // Returns read bytes.
-func (r *ResponseOperation) ReadFrom(rr io.Reader) (int64, error) {
+func (r *ResponseOperation) ReadFrom(rr *bufio.Reader) (int64, error) {
 	// read response
 	n, err := r.response.ReadFrom(rr)
 	if err != nil {

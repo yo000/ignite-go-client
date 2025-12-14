@@ -2,7 +2,7 @@ package ignite
 
 import (
 	"bytes"
-	"io"
+	"bufio"
 	"testing"
 )
 
@@ -17,7 +17,7 @@ func TestResponseHandshake_ReadFrom(t *testing.T) {
 	r2 := &ResponseHandshake{}
 
 	type args struct {
-		rr io.Reader
+		rr *bufio.Reader
 	}
 	tests := []struct {
 		name                            string
@@ -33,7 +33,7 @@ func TestResponseHandshake_ReadFrom(t *testing.T) {
 			name: "1",
 			r:    r1,
 			args: args{
-				rr: rr1,
+				rr: bufio.NewReader(rr1),
 			},
 			want:        4 + 1,
 			wantSuccess: true,
@@ -42,7 +42,7 @@ func TestResponseHandshake_ReadFrom(t *testing.T) {
 			name: "2",
 			r:    r2,
 			args: args{
-				rr: rr2,
+				rr: bufio.NewReader(rr2),
 			},
 			want:        4 + 23,
 			wantSuccess: false,

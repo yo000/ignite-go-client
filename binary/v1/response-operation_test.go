@@ -2,7 +2,7 @@ package ignite
 
 import (
 	"bytes"
-	"io"
+	"bufio"
 	"testing"
 )
 
@@ -23,7 +23,7 @@ func TestResponseOperation_ReadFrom(t *testing.T) {
 	r3 := NewResponseOperation(0)
 
 	type args struct {
-		rr io.Reader
+		rr *bufio.Reader
 	}
 	tests := []struct {
 		name        string
@@ -39,7 +39,7 @@ func TestResponseOperation_ReadFrom(t *testing.T) {
 			name: "1",
 			r:    r1,
 			args: args{
-				rr: rr1,
+				rr: bufio.NewReader(rr1),
 			},
 			want:       4 + 12,
 			wantUID:    1,
@@ -49,7 +49,7 @@ func TestResponseOperation_ReadFrom(t *testing.T) {
 			name: "2",
 			r:    r2,
 			args: args{
-				rr: rr2,
+				rr: bufio.NewReader(rr2),
 			},
 			want:        4 + 28,
 			wantUID:     2,
@@ -60,7 +60,7 @@ func TestResponseOperation_ReadFrom(t *testing.T) {
 			name: "3",
 			r:    r3,
 			args: args{
-				rr: rr3,
+				rr: bufio.NewReader(rr3),
 			},
 			want:    4 + 12,
 			wantErr: true,
