@@ -222,6 +222,9 @@ func Test_client_QuerySQLFields(t *testing.T) {
 				cache: "QuerySQLFields",
 				data: QuerySQLFieldsData{
 					PageSize: 10,
+					// NOK : WHERE o._key = ?
+					// NOK : WHERE o.orgId = ?
+					// OK  : WHERE p.orgId = ?
 					Query: "SELECT " +
 						"o.name AS Name, " +
 						"o.foundDateTime AS Found, " +
@@ -229,7 +232,8 @@ func Test_client_QuerySQLFields(t *testing.T) {
 						"p.lastName AS LastName, " +
 						"p.salary AS Salary " +
 						"FROM Person p INNER JOIN Organization o ON p.orgId = o._key " +
-						"WHERE o._key = ? " +
+						//"WHERE o._key = ? " +
+						"WHERE p.orgId = ? " +
 						"ORDER BY p.firstName",
 					QueryArgs: []interface{}{
 						int64(2)},

@@ -721,7 +721,7 @@
 
         <property name="clientConnectorConfiguration">
             <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
-                <property name="host" value="127.0.0.1"/>
+                <property name="host" value="0.0.0.0"/>
                 <property name="port" value="10800"/>
                 <property name="portRange" value="10"/>
                 <property name="sslEnabled" value="true"/>

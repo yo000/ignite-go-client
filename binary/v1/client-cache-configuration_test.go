@@ -184,7 +184,7 @@ func Test_client_CacheGetConfiguration(t *testing.T) {
 				QueryParellelism:              1,
 				ReadFromBackup:                true,
 				RebalanceBatchSize:            524288,
-				RebalanceBatchesPrefetchCount: 2,
+				RebalanceBatchesPrefetchCount: 3,
 				RebalanceDelay:                0,
 				RebalanceMode:                 1,
 				RebalanceOrder:                0,

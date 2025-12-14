@@ -157,6 +157,7 @@ protocol://host:port/cache?param1=value1&param2=value2&paramN=valueN
 
 ### How to run tests
 
+#### Manual install
 1. Download `Apache Ignite 2.7` from [official site](https://ignite.apache.org/download.cgi#binaries)
 2. Extract distributive to any folder
 3. Persistance mode is enabled to run tests. So you need to remove `<path_with_ignite>\work` folder each time to clean up test data before run tests.
@@ -186,6 +187,42 @@ protocol://host:port/cache?param1=value1&param2=value2&paramN=valueN
 ```bash
 go test ./...
 ```
+
+#### Docker install
+1. Use ignite docker image from this project directory:
+```bash
+docker run -d -v "$PWD/testdata/configuration-for-tests.xml:/configuration-for-tests.xml" \
+  -v "$PWD/testdata/ssl:/opt/ignite/ssl" -e CONFIG_URI=/configuration-for-tests.xml \
+  -p 10800:10800 apacheignite/ignite:2.17.0
+```
+
+2. Activate cluster:
+```bash
+docker exec -it `docker ps -l -q` /opt/ignite/apache-ignite/bin/control.sh --user ignite \
+  --password ignite --keystore /opt/ignite/ssl/server.jks --keystore-password 123456 \
+  --truststore /opt/ignite/ssl/trust.jks --truststore-password 123456 --set-state ACTIVE --yes
+```
+
+3. Run tests into the root folder of this project:
+
+```bash
+go clean -testcache && go test ./...
+```
+
+4. Purge data after each test, then restart container and activate cluster:
+```bash
+docker exec -it `docker ps -l -q` /bin/rm -rf "/opt/ignite/apache-ignite/work"
+docker restart `docker ps -l -q`
+docker exec -it `docker ps -l -q` /opt/ignite/apache-ignite/bin/control.sh --user ignite \
+  --password ignite --keystore /opt/ignite/ssl/server.jks --keystore-password 123456 \
+  --truststore /opt/ignite/ssl/trust.jks --truststore-password 123456 --set-state ACTIVE --yes
+```
+
+5. Eventually use sqlline.sh to view data:
+```bash
+docker exec -it `docker ps -l -q` /opt/ignite/apache-ignite/bin/sqlline.sh -n ignite -p ignite -u "jdbc:ignite:thin://127.0.0.1:10800?sslMode=require&sslClientCertificateKeyStoreUrl=/opt/ignite/ssl/server.jks&sslClientCertificateKeyStorePassword=123456&sslTrustCertificateKeyStoreUrl=/opt/ignite/ssl/trust.jks&sslTrustCertificateKeyStorePassword=123456"
+```
+
 
 ### Type mapping
 
