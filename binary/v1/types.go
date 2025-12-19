@@ -723,6 +723,12 @@ func WriteObject(w io.Writer, o interface{}) error {
 		return WriteNull(w)
 	}
 
+	if reflect.ValueOf(o).Kind() == reflect.Ptr {
+		if reflect.ValueOf(o).IsNil() {
+			return WriteNull(w)
+		}
+	}
+
 	if v := reflect.ValueOf(o); v.Kind() == reflect.Ptr {
 		return WriteObject(w, v.Elem().Interface())
 	}
